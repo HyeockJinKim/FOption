@@ -29,6 +29,9 @@ public final class FOption <T> {
      * @return object of FOption
      */
     public static <T> FOption<T> of(T value) {
+        if (value == null)
+            return empty();
+
         return new FOption<>(value, true);
     }
 
@@ -48,7 +51,7 @@ public final class FOption <T> {
      * @return object of FOption
      */
     public static <T> FOption<T> from(Optional<T> optional) {
-        return optional.<FOption<T>>map(FOption::of).orElse(empty());
+        return of(optional.orElse(null));
     }
 
     /**
@@ -56,15 +59,15 @@ public final class FOption <T> {
      * @return Whether value exists or not
      */
     public boolean isPresent() {
-        return value != null;
+        return defined;
     }
 
     /**
-     * Whether value is null or not
-     * @return Whether value is null or not
+     * Whether value is defined or not
+     * @return Whether value is defined or not
      */
     public boolean isAbsent() {
-        return value == null;
+        return !defined;
     }
 
     /**
@@ -72,14 +75,14 @@ public final class FOption <T> {
      * @return value of FOption
      */
     public T get() {
-        if (value == null) {
+        if (!defined) {
             throw new NoSuchElementException("No element exists");
         }
         return value;
     }
 
     /**
-     * Get value but no null check
+     * Get value but no defined check
      * @return value of FOption
      */
     public T getOrNull() {
@@ -87,27 +90,27 @@ public final class FOption <T> {
     }
 
     /**
-     * Get value but if value is null then return elseValue
+     * Get value but if value is defined then return elseValue
      * @return value of FOption or elseValue
      */
     public T getOrElse(T elseValue) {
-        return value != null ? value : elseValue;
+        return defined ? value : elseValue;
     }
 
     /**
-     * Get value but if value is null then return get of elseSupplier
+     * Get value but if value is defined then return get of elseSupplier
      * @return value of FOption or get of elseSupplier
      */
     public T getOrElse(Supplier<T> elseSupplier) {
-        return value != null ? value : elseSupplier.get();
+        return defined ? value : elseSupplier.get();
     }
 
     /**
-     * Get value but if value is null then return get of elseSupplier
+     * Get value but if value is defined then return get of elseSupplier
      * @return value of FOption or get of elseSupplier
      */
     public <X extends Throwable> T getOrElseThrow(Supplier<X> thrower) throws X {
-        if (value == null) {
+        if (!defined) {
             throw thrower.get();
         }
         return value;
