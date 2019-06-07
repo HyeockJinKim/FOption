@@ -40,6 +40,7 @@ public final class FOption <T> {
      * @param <T> the class of value
      * @return EMPTY FOption object
      */
+    @SuppressWarnings("unchecked")
     public static <T> FOption<T> empty() {
         return (FOption<T>) EMPTY;
     }
